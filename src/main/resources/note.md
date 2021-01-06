@@ -80,7 +80,7 @@ split -> select, collect -> coMap/coFlatMap
 <br>
 4. 程序默认的时间语义是 Processing Time
 
-####Watermark
+### Watermark
 1. watermark 就是 EventTime 代表当前处理的进展
 <br>
 2. 主要用来处理乱序数据，一般定义一个延迟时间，延迟触发窗口的操作
@@ -99,7 +99,7 @@ split -> select, collect -> coMap/coFlatMap
 <br>window 的 allowedLateness 设置窗口允许处理迟到数据的时间，只对 event-time的窗口有效，设定的是窗口到达关闭时间后继续保持开启多久
 <br>window 的 sideOutputLateData 将迟到的数据写入侧输出流
 
-#### 状态管理
+### 状态管理
 Flink中的状态
 1. 算子状态(Operator State)
 <br>

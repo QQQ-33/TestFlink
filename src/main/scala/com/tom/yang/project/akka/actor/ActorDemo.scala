@@ -40,10 +40,10 @@ class AActor(actorRef: ActorRef) extends Actor {
         bActorRef ! "fight"
       }
     }
-    case "exit" => {
-      context.stop(self)
-      context.system.terminate()
-    }
+//    case "exit" => {
+//      context.stop(self)
+//      context.system.terminate()
+//    }
   }
 }
 
@@ -67,9 +67,9 @@ class BActor extends Actor {
         sender() ! "fight"
       }
     }
-    case "exit" => {
-      context.stop(self)
-      context.system.terminate()
-    }
+//    case "exit" => {
+//      context.stop(self)
+//      context.system.terminate()
+//    }
   }
 }

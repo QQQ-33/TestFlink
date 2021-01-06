@@ -23,10 +23,10 @@ class CustomerClient(serverHost: String, serverPort: Int, serverActorSystem: Str
   }
   override def receive: Receive = {
     case "start" => println("客户端运行，可以开始提问...")
-    case "exit" => {
-      context.stop(self)
-      context.system.terminate()
-    }
+//    case "exit" => {
+//      context.stop(self)
+//      context.system.terminate()
+//    }
     case msg: String => {
       // 将消息发送给 Server， 最好不要直接发送字串，将字串封装到 case class 中(也就是自定义通讯协议)
       serverActorRef ! ClientMessage(msg)

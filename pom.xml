@@ -116,11 +116,12 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
+<!--        <sourceDirectory>src/main/scala</sourceDirectory>-->
+        <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/scala</testSourceDirectory>
         <!-- 打包插件在 maven 官网的生命周期中查找 -->
         <plugins>
-            <!-- scala 编译 -->
+            <!-- scala compile -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
@@ -133,10 +134,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- package -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>

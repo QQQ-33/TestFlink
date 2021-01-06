@@ -49,11 +49,11 @@ class SayHelloActor extends Actor {
   override def receive: Receive = {
     case "Hello" => println("receive Hello, Hello too :)")
     case "ok" => println("receive ok, ok too :)")
-    case "exit" => {
-      println("receive exit")
-      context.stop(self) // 停止当前 Actor
-      context.system.terminate() // 停止 ActorSystem
-    }
+//    case "exit" => {
+//      println("receive exit")
+//      context.stop(self) // 停止当前 Actor
+//      context.system.terminate() // 停止 ActorSystem
+//    }
     case _ => println("Nothing received")
   }
 }
