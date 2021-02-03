@@ -757,3 +757,74 @@ savepoints 是一个强大的功能。除了故障恢复外，savepoints可以�
  Flink 内部 checkpoint\
  Kafka Source： 将偏移量保存为 state，故障恢复时可以恢复 偏移量\
  Kafka Sink： 源码实现了TwoPhaseCommitSinkFunction        \   
+ 
+ 
+ ### TableAPI & Flink SQL
+ **Table**
+ TableEnvironment 可以注册目录 Catalog，并可基于 Catalog 注册表\
+ Table 是由一个标识符来指定的，由 3 部分组成：\
+ Catalog database 对象名(不指定时默认为 default Catalog 和 default database)\
+ Table 和 View 的区别是， table 一般是由外部数据而来，或者由 DataStream 转换而来\
+ view 是由现有的 table 创建而来，通常是 tableAPi 或者 SQL 查询的一个结果集。
+ 
+ ```java
+// tableEnv
+// .connect()// 定义数据源，和外部系统建立连接
+// .withFormat() // 定义数据格式
+// .withSchema() // 定义表结构
+// .createTemporaryTable("tableName") // 创建表
+```
+Table API 是集成在 Scala和Java语言内的查询 API
+Table API 基于 Table 类，并提供一整套操作处理的方法API，这些方法会返回一个新的 Table。
+
+**更新模式**
+流式查询，需要声明如何在表和外部连接器之间执行转换\
+与外部系统狡猾的消息类型，由更新模式指定\
+- 追加模式(Append)
+    表只做插入，和外部连接器只交换insert消息。
+- 撤回模式(Retract)
+    表和外部连接器交换添加(Add)和撤回(Retract)消息\
+    插入操作编码为 Add，删除编码为 Retract，更新编码为上一条的 Retract 和下一条的 Add 消息。
+- 更新插入模式(Upsert)
+    更新和插入都被编码为 Upsert 消息，删除编码为Delete 消息。
+    
+**Table 和 DataStream 转换**
+ ```java
+// Table -> DataStream
+// 简单的转换操作，用于只会插入的更改场景
+// DataStream<Row> appendStream = tableEnv.toAppendStream(table, Row.class);
+// 复杂的操作，聚合，开窗等
+// DataStream<Tuple2<Boolean, Row>> retractStream = tableEnv.toRetractStream(table, Row.class);
+
+// DataStream -> Table
+// Table table = tableEnv.fromDataStream(dataStream);
+// 默认字段一一对应，也可以手动指定字段对应
+
+// 创建 view
+// tableEnv.createTemporaryView("sensorView", dataStream)
+// tableEnv.createTemporaryView("sensorView", dataStream)table
+```
+
+**流处理和关系代数(表)的区别**
+<table>
+    <tr>
+        <th></th>
+        <th>关系代数(表)/SQL</th>
+        <th>流处理</th>
+    </tr>
+    <tr>
+        <td>处理的数据对象</td>
+        <td>字段元组的有界集合</td>
+        <td>字段元组的无限序列</td>
+    </tr>
+    <tr>
+        <td>query对数据的访问</td>
+        <td>可以访问完整的数据输入</td>
+        <td>无法访问所有数据，必须持续等待流式输入</td>
+    </tr>
+    <tr>    
+        <td>查询终止条件</td>
+        <td>生成固定大小的结果集后终止</td>
+        <td>永不停止，根据持续收到的数据，不断更新查询结果</td>
+    </tr>
+</table>
