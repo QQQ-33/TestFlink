@@ -779,7 +779,7 @@ Table API 基于 Table 类，并提供一整套操作处理的方法API，这些
 
 **更新模式**
 流式查询，需要声明如何在表和外部连接器之间执行转换\
-与外部系统狡猾的消息类型，由更新模式指定\
+与外部系统狡猾的消息类型，由更新模式指定
 - 追加模式(Append)
     表只做插入，和外部连接器只交换insert消息。
 - 撤回模式(Retract)
@@ -828,3 +828,38 @@ Table API 基于 Table 类，并提供一整套操作处理的方法API，这些
         <td>永不停止，根据持续收到的数据，不断更新查询结果</td>
     </tr>
 </table>
+
+**Processing Time & Event Time**
+```java
+// 最简单的追加一个字段作为 processing time
+// pt.proctime 是 flink 内置函数 PROCTIME() 自动生成的 time
+// Table sensorTable = tableEnv.fromDataStream(dataStream, "id, temperature, timestamp, pt.proctime");
+
+// event time 
+// 使用 .rowtime 
+
+// Table sensorTable = tableEnv.fromDataStream(dataStream, "id, temperature, timestamp.rowtime");
+// Table sensorTable = tableEnv.fromDataStream(dataStream, "id, temperature, rt.rowtime");
+```
+**Window**
+```java
+// Group window
+// 类比 DataStream 的 TimeWindow和CountWindow
+
+// Over Window
+
+```
+
+**函数**
+```java
+// 内置函数
+
+// 自定义函数
+// 需要用 registerFunction() 在 TableEnvironment中注册自定义函数
+// 分为几类：
+// 标量函数(Scalar Functions)
+
+
+// 
+
+```

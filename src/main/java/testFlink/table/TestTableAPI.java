@@ -3,21 +3,19 @@ package testFlink.table;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.DataTypes;
-import org.apache.flink.table.api.EnvironmentSettings;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.api.*;
 import org.apache.flink.table.api.bridge.java.BatchTableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.descriptors.Csv;
 import org.apache.flink.table.descriptors.FileSystem;
 import org.apache.flink.table.descriptors.Kafka;
 import org.apache.flink.table.descriptors.Schema;
+import org.apache.flink.table.functions.ScalarFunction;
 import org.apache.flink.types.Row;
 import testFlink.beans.SensorReading;
 import testFlink.source.SensorSource;
 
-import static org.apache.flink.table.api.Expressions.$;
+import static org.apache.flink.table.api.Expressions.*;
 
 public class TestTableAPI {
     public static StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -140,6 +138,7 @@ public class TestTableAPI {
         env.setParallelism(1);
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
         // 从 kafka 读取
+        // ！connect 方法即将被删除，使用 DDL语句创建 table
         tableEnv.connect(
                 new Kafka()
                 .version("0.11")
@@ -177,4 +176,22 @@ public class TestTableAPI {
 
         env.execute();
     }
+    public static void testWindow() throws Exception{
+        env.setParallelism(1);
+        DataStream<SensorReading> input = env.addSource(new SensorSource());
+
+        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+
+        Table dataTable = tableEnv.fromDataStream(input);
+        // Group Window
+        dataTable.window(Tumble.over(lit(1).minutes()).on("rt").as("w"))
+                .groupBy($("id"), $("w"))
+                .select($("id"), $("temperature").avg(), $("w").end());
+        // Over Window
+        dataTable.window(Over.partitionBy($("id")).orderBy($("temperature")).preceding(UNBOUNDED_RANGE).as("w"))
+                .select($("id"), $("temperature").avg(), $("w").end());
+    }
+
+
+
 }
