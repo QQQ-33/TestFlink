@@ -356,7 +356,7 @@ jobmanager.execution.failover-strategy: region
   JobManager 向 ResourceManager 请求执行任务必要的资源，也就是 TaskManager 上的 slot。一旦获取到足够的资源就会将ExecutionGraph分发到TaskManager上。运行的过程当中 JobManager负责所有需要中央协调的操作，比如 checkpoints。
 - TaskManager \
   Flink 的工作进程。通常会有多个TaskManager，每一个都包含一定数量的 slot，slot的数量限制了 TaskManager能够执行任务的数量。\
-  启动之后TaskManager会像ResourceManager注册它的slot，收到ResourceManager的指令后，TaskManager会将一个或多个slot提供给JobMangager调用。JobManager就可以向slot分配 task。\
+  启动之后TaskManager会像ResourceManager注册它的slot，收到ResourceManager的指令后，TaskManager会将一个或多个slot提供给JobManager调用。JobManager就可以向slot分配 task。\
   在执行过程当中，一个TaskManager可以跟其他运行同一应用程序的TaskManager交换数据。
 - ResourceManager \
   主要负责 TaskManager 的 slot， slot是Flink中定义的资源单位。\
@@ -392,7 +392,7 @@ jobmanager.execution.failover-strategy: region
 ![架构4.PNG](../../resources/img/架构4.PNG "架构4")
 
 **Tasks and Operator Chains**\
-为了分布式的执行，Flink 将算子的subtask链在一起形成 tasks ，每个 task 交由一个 thread 运行。它减少了线程间切换和缓冲的开销，提高了吞吐量，减少了延迟。如何将算子进行链接可以进行配置
+为了分布式的执行，Flink 将算子的subtask链在一起形成 tasks ，每个 task 交由一个 thread 运行。它减少了线程间切换和缓冲的开销，提高了吞吐量，减少了延迟.
 
 **并行度** \
 算子的子任务 subtask 的个数被称作并行度，一个job的并行度是所有算子的最大的并行度\

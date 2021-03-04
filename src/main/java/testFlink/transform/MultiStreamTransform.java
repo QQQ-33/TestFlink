@@ -9,7 +9,10 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.SplitStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import testFlink.beans.SensorReading;
 import testFlink.source.SensorSource;
 
@@ -20,7 +23,7 @@ public class MultiStreamTransform {
 
     public static void main(String[] args)throws Exception {
         env.setParallelism(1);
-
+        test3();
         env.execute();
     }
 
@@ -68,7 +71,28 @@ public class MultiStreamTransform {
             }
         });
     }
+    private static void test3() throws Exception{
+        DataStream<SensorReading> input = env.addSource(new SensorSource());
+        // 注意将 OutputTag 作为匿名内部类使用，防止类型擦除
+//        final OutputTag<SensorReading> highTemp = new OutputTag<SensorReading>("highTemp");
+        final OutputTag<SensorReading> highTemp = new OutputTag<SensorReading>("highTemp"){};
+//        final OutputTag<SensorReading> lowTemp = new OutputTag<>("lowTemp");
+        SingleOutputStreamOperator<SensorReading> process = input.process(new ProcessFunction<SensorReading, SensorReading>() {
 
+            @Override
+            public void processElement(SensorReading sensorReading, Context context, Collector<SensorReading> collector) throws Exception {
+                if (sensorReading.getTemperature() > 60) {
+                    context.output(highTemp, sensorReading);
+                } else {
+                    collector.collect(sensorReading);
+                }
+
+            }
+        });
+        process.print("low-Temp");
+        process.getSideOutput(highTemp).print("high-Temp");
+//        process.getSideOutput(lowTemp).print();
+    }
     /**
      * connect
      * 连接两个流，内部的数据类型保持各自的类型

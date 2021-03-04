@@ -36,15 +36,16 @@ public class TransformTest {
             }
         });
         // flatMap
-        DataStream<String> flatMapStream = input.flatMap(new FlatMapFunction<String, String>() {
-            @Override
-            public void flatMap(String s, Collector<String> collector) throws Exception {
-                String[] fields = s.split(",");
-                for (String f: fields){
-                    collector.collect(f);
-                }
-            }
-        });
+//        DataStream<String> flatMapStream = input.flatMap(new FlatMapFunction<String, String>() {
+//            @Override
+//            public void flatMap(String s, Collector<String> collector) throws Exception {
+//                String[] fields = s.split(",");
+//                for (String f: fields){
+//                    collector.collect(f);
+//                }
+//            }
+//        });
+        DataStream<String> flatMapStream = input.flatMap(new TestFunction());
         // filter e.g. 筛选 sensor_1 的数据
         DataStream<String> filterStream = input.filter(new FilterFunction<String>() {
             @Override
